@@ -16,7 +16,7 @@ export const BOOKS: Book[] = [
     title: "Toaster of Infinite Toast",
     problem: "The toaster won't stop producing toast, violating laws of conservation.",
     resolution: "Installing a localized temporal dampener.",
-    image: "https://via.placeholder.com/300x400?text=Infinite+Toast",
+    image: "/covers/toaster_cover.png",
     price: "$2.99",
     wordCount: 14500
   },
