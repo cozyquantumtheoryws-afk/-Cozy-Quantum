@@ -170,15 +170,15 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-40">
-      <header className="bg-white/80 backdrop-blur sticky top-0 z-40 px-6 py-4 flex justify-between items-center border-b border-amber-100">
+    <div className="min-h-screen pb-40 bg-magical-50 bg-hero-pattern bg-cover bg-fixed bg-center">
+      <header className="bg-white/70 backdrop-blur-md sticky top-0 z-40 px-6 py-4 flex justify-between items-center border-b border-magical-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+          <div className="w-10 h-10 bg-magical-800 rounded-lg flex items-center justify-center text-mystic-teal shadow-lg">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 serif">The Waveform Handyman</h1>
-            <p className="text-[9px] text-amber-700 font-bold uppercase tracking-widest">Reality Repair Service</p>
+            <h1 className="text-2xl font-bold text-magical-900 serif tracking-tight">The Waveform Handyman</h1>
+            <p className="text-[10px] text-magical-600 font-bold uppercase tracking-[0.2em]">Reality Repair Service</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -197,7 +197,7 @@ const App: React.FC = () => {
         {/* Tabs */}
         <div className="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
           {['shop', 'desk', 'community'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${activeTab === tab ? 'bg-amber-800 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${activeTab === tab ? 'bg-magical-800 text-white shadow-lg border-magical-800 scale-105' : 'bg-white/80 text-magical-600 border-white hover:bg-white hover:border-magical-200'}`}>
               {tab === 'shop' ? 'Storefront' : tab === 'desk' ? "Artie's Workbench" : 'Community Board'}
             </button>
           ))}
@@ -206,27 +206,27 @@ const App: React.FC = () => {
         {activeTab === 'shop' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {BOOKS.map(book => (
-              <div key={book.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col group">
-                <div className="relative aspect-[3/4] bg-gray-50 overflow-hidden">
+              <div key={book.id} className="bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-mystic-purple/20 transition-all duration-500 border border-white flex flex-col group">
+                <div className="relative aspect-[3/4] bg-magical-100 overflow-hidden">
                   <img src={customCovers[book.id] || book.image} alt={book.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${generatingBookId === book.id ? 'opacity-30 blur-sm' : ''}`} />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <button onClick={() => playFullStory(book)} className="bg-white p-4 rounded-full text-amber-900 hover:scale-110 transition-transform shadow-lg">
+                  <div className="absolute inset-0 bg-magical-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <button onClick={() => playFullStory(book)} className="bg-white/10 backdrop-blur-md p-4 rounded-full text-white hover:bg-white hover:text-magical-900 hover:scale-110 transition-all shadow-lg border border-white/20">
                       {playingBook?.id === book.id && isPlaying ? <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> : <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>}
                     </button>
                   </div>
-                  {generatingBookId === book.id && <div className="absolute inset-0 flex items-center justify-center bg-white/40"><div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div></div>}
+                  {generatingBookId === book.id && <div className="absolute inset-0 flex items-center justify-center bg-white/40"><div className="w-8 h-8 border-4 border-magical-600 border-t-transparent rounded-full animate-spin"></div></div>}
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 serif leading-tight">{book.title}</h3>
-                  <p className="text-sm text-gray-600 mb-6 italic leading-relaxed">"{book.problem}"</p>
-                  <div className="mt-auto flex items-center justify-between border-t border-gray-50 pt-4">
+                  <h3 className="text-xl font-bold text-magical-900 mb-2 serif leading-tight group-hover:text-magical-700 transition-colors">{book.title}</h3>
+                  <p className="text-sm text-magical-500 mb-6 italic leading-relaxed">"{book.problem}"</p>
+                  <div className="mt-auto flex items-center justify-between border-t border-magical-100 pt-4">
                     <div className="flex flex-col">
-                      <span className="text-amber-700 font-bold">{book.price}</span>
-                      <span className="text-[10px] text-gray-400 uppercase font-mono">{book.wordCount} words</span>
+                      <span className="text-mystic-teal font-bold">{book.price}</span>
+                      <span className="text-[10px] text-magical-400 uppercase font-mono">{book.wordCount} words</span>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => generateBookCover(book)} className="p-2 border border-amber-200 text-amber-600 rounded-lg hover:bg-amber-50 transition-colors"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
-                      <button onClick={() => playFullStory(book)} className="bg-amber-800 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-900 transition-colors shadow-sm">Listen Full Story</button>
+                      <button onClick={() => generateBookCover(book)} className="p-2 border border-magical-200 text-magical-400 rounded-lg hover:bg-magical-50 hover:text-magical-600 transition-colors"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+                      <button onClick={() => playFullStory(book)} className="bg-magical-800 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-magical-900 transition-colors shadow-lg shadow-magical-900/10">Listen Full Story</button>
                     </div>
                   </div>
                 </div>
