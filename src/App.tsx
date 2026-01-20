@@ -6,6 +6,7 @@ import ResearchStation from './components/ResearchStation';
 import GithubSync from './components/GithubSync';
 import { geminiService, decodeAudioData, decodeBase64 } from './services/geminiService';
 import type { Book } from './types';
+import { paymentService } from './services/paymentService';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'shop' | 'desk' | 'community'>('shop');
@@ -347,8 +348,11 @@ const App: React.FC = () => {
               </div>
 
               <div className="flex-1 flex justify-end">
-                <button className="bg-amber-100 text-amber-900 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-amber-200 hover:bg-amber-200 transition-colors">
-                  Full Vol. {playingBook.id} $1.99
+                <button 
+                  onClick={() => paymentService.initiateCheckout(playingBook.id, 'user_123')} // 'user_123' is placeholder till Auth is real
+                  className="bg-magical-100 text-magical-900 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-magical-200 hover:bg-magical-200 transition-colors"
+                >
+                  Buy Vol. {playingBook.id} $1.99
                 </button>
               </div>
             </div>
