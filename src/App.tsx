@@ -4,7 +4,7 @@ import { BOOKS } from './constants';
 import ArtieChat from './components/ArtieChat';
 import ResearchStation from './components/ResearchStation';
 import GithubSync from './components/GithubSync';
-import { geminiService, decodeAudioData, decodeBase64 } from './services/geminiService';
+import { geminiService, decodeAudioData } from './services/geminiService';
 import type { Book } from './types';
 import { paymentService } from './services/paymentService';
 
@@ -29,6 +29,8 @@ const App: React.FC = () => {
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const narrationLinesRef = useRef<string[]>([]);
+  const [currentStoryLineIndex, setCurrentStoryLineIndex] = useState(0);
 
   useEffect(() => {
     const checkKey = async () => {
@@ -124,58 +126,19 @@ const App: React.FC = () => {
         setVisualsLoading(false);
       }
 
-      // 3. TTS Narration (State-based Sequencer)
+      // 3. TTS Narration Setup
       const audioCtx = audioContextRef.current;
       if (!audioCtx) throw new Error("Audio context not initialized.");
 
       // Split story text into lines for narration
       const narrationLines = storyText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
-      
-      // Store lines in ref to access inside effects without stale closures if needed, 
-      // but splitting here is fine if storyText is stable.
-      // We will use a separate effect to trigger playback when currentIndex changes.
+      narrationLinesRef.current = narrationLines; 
 
       // Start the sequence
       setAudioLoading(true);
       setIsPlaying(true);
-      setCurrentStoryLineIndex(0);
+      setCurrentStoryLineIndex(0); // This triggers the useEffect below
 
-      const playCurrentLine = async (index: number) => {
-        if (index >= narrationLines.length) {
-           setIsPlaying(false);
-           setAudioLoading(false);
-           return;
-        }
-
-        const currentLine = narrationLines[index];
-        setAudioLoading(true);
-
-        try {
-          const audioBuffer = await geminiService.speakAsArtie(currentLine);
-          
-          // Double check if we are still playing before starting audio
-          if (!audioRef.current && isPlaying) { // audioRef.current is the source
-             // Actually, we need to respect the latest state. 
-             // decoding...
-             const decodedBuffer = await decodeAudioData(audioBuffer, audioCtx);
-             
-             const source = audioCtx.createBufferSource();
-             source.buffer = decodedBuffer;
-             source.connect(audioCtx.destination);
-             
-             source.onended = () => {
-               currentSourceRef.current = null;
-               // Advance to next line
-               setCurrentStoryLineIndex(prev => prev + 1);
-             };
-             
-             source.start();
-             currentSourceRef.current = source;
-             setAudioLoading(false);
-          }
-        } catch (err: any) {
-          console.error("Audio Playback Error:", err);
-          setErrorMessage(`Audio Error: ${err.message || 'Unknown'}. key set?`);
     } catch (error: any) {
       console.error("Narrative Error:", error);
       const isInternalError = error.message?.includes("500") || error.message?.includes("internal error");
@@ -183,12 +146,9 @@ const App: React.FC = () => {
       setAudioLoading(false);
       setVisualsLoading(false);
     } finally {
-      setAudioLoading(false);
+      // Any final cleanup if needed, though loading states are handled in catch/success paths usually
     }
   };
-
-  const narrationLinesRef = useRef<string[]>([]);
-  const [currentStoryLineIndex, setCurrentStoryLineIndex] = useState(0);
 
   // Effect to play audio when line index changes
   useEffect(() => {
@@ -231,7 +191,7 @@ const App: React.FC = () => {
         setAudioLoading(false);
         setCurrentStoryLineIndex(0); // Reset for next play
     }
-  }, [currentStoryLineIndex, isPlaying]); // Dependencies for the effect
+  }, [currentStoryLineIndex, isPlaying]);
 
   const generateBookCover = async (book: Book) => {
     if (!hasApiKey) {
