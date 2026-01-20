@@ -8,9 +8,10 @@ import { geminiService, decodeAudioData } from './services/geminiService';
 import type { Book } from './types';
 import { paymentService } from './services/paymentService';
 import { Footer } from './components/Footer';
+import { MarketingDashboard } from './components/MarketingDashboard';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'shop' | 'desk' | 'community'>('shop');
+  const [activeTab, setActiveTab] = useState<'shop' | 'desk' | 'community' | 'marketing'>('shop');
   const [hasApiKey, setHasApiKey] = useState(false);
   const [generatingBookId, setGeneratingBookId] = useState<number | null>(null);
   const [customCovers, setCustomCovers] = useState<Record<number, string>>({});
@@ -264,6 +265,13 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <button 
+             onClick={() => setActiveTab('marketing')}
+             className={`p-2 rounded-full transition-colors ${activeTab === 'marketing' ? 'bg-magical-800 text-mystic-teal' : 'text-magical-800/20 hover:text-magical-800'}`}
+             title="Quantum Advertising Channel"
+          >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+          </button>
           {!hasApiKey && (
             <button onClick={handleOpenKeySelector} className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-xs font-bold border border-amber-200 hover:bg-amber-200 transition-all">
               Unlock Full Visuals
@@ -353,6 +361,11 @@ const App: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {activeTab === 'marketing' && (
+          <div className="h-[calc(100vh-140px)]">
+            <MarketingDashboard />
           </div>
         )}
       </main>
