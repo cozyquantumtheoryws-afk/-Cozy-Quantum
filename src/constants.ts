@@ -15,7 +15,7 @@ export const BOOKS: Book[] = [
     id: 2,
     title: "Toaster of Infinite Toast",
     problem: "A vintage appliance is drawing carbohydrates from a grain-heavy multiverse, filling the kitchen with localized causality violations.",
-    resolution: "Sketching a 'Do Not Enter' glyph in butter on the primary slot.",
+    resolution: "Applying a temporal sealant to the browning dial and grounding the crumb tray to the current timeline.",
     image: "/covers/toaster_cover.png",
     price: "$1.99",
     wordCount: 14500
