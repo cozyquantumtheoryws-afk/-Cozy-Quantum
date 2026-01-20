@@ -231,7 +231,10 @@ const App: React.FC = () => {
               Unlock Full Visuals
             </button>
           )}
-          <div className="w-8 h-8 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-800 text-xs font-bold">
+          <div 
+             onClick={() => setActiveTab('desk')}
+             className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold cursor-pointer transition-all ${activeTab === 'desk' ? 'bg-magical-800 text-white border-magical-900 ring-2 ring-amber-300' : 'bg-amber-100 border-amber-200 text-amber-800 hover:bg-amber-200 hover:scale-110'}`}
+          >
             A
           </div>
         </div>
@@ -239,10 +242,10 @@ const App: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-          {['shop', 'desk', 'community'].map(tab => (
+        <div className="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide justify-center">
+          {['shop', 'community'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${activeTab === tab ? 'bg-magical-800 text-white shadow-lg border-magical-800 scale-105' : 'bg-white/80 text-magical-600 border-white hover:bg-white hover:border-magical-200'}`}>
-              {tab === 'shop' ? 'Storefront' : tab === 'desk' ? "Artie's Workbench" : 'Community Board'}
+              {tab === 'shop' ? 'Storefront' : 'Community Board'}
             </button>
           ))}
         </div>
