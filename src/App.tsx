@@ -124,21 +124,49 @@ const App: React.FC = () => {
         setVisualsLoading(false);
       }
 
-      // 3. TTS Narration
-      const audioBase64 = await geminiService.speakAsArtie(storyText);
-      if (audioBase64 && audioContextRef.current) {
-        const buffer = await decodeAudioData(decodeBase64(audioBase64), audioContextRef.current, 24000, 1);
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioContextRef.current.destination);
-        source.onended = () => {
+      // 3. TTS Narration (simplified and sequential)
+      const audioCtx = audioContextRef.current;
+      if (!audioCtx) throw new Error("Audio context not initialized.");
+
+      // Split story text into lines for narration
+      const narrationLines = storyText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
+
+      const playNextLine = async (index: number) => {
+        if (index >= narrationLines.length) {
           setIsPlaying(false);
-          currentSourceRef.current = null;
-        };
-        source.start();
-        currentSourceRef.current = source;
+          setAudioLoading(false);
+          return;
+        }
+
+        const currentLine = narrationLines[index];
+        // Note: visual highlighting logic removed for simplicity
+        
+        setAudioLoading(true);
         setIsPlaying(true);
-      }
+
+        try {
+          const audioBuffer = await geminiService.speakAsArtie(currentLine);
+          const decodedBuffer = await decodeAudioData(audioBuffer, audioCtx);
+
+          const source = audioCtx.createBufferSource();
+          source.buffer = decodedBuffer;
+          source.connect(audioCtx.destination);
+          source.onended = () => {
+            currentSourceRef.current = null;
+            playNextLine(index + 1); // Auto-play next
+          };
+          source.start();
+          currentSourceRef.current = source;
+        } catch (lineError) {
+          console.error("Error narrating line:", lineError);
+          // Don't kill the whole loop, just try next or stop
+          setIsPlaying(false);
+          setAudioLoading(false);
+        }
+      };
+      
+      playNextLine(0); // Start narration from the first line
+
     } catch (error: any) {
       console.error("Narrative Error:", error);
       const isInternalError = error.message?.includes("500") || error.message?.includes("internal error");

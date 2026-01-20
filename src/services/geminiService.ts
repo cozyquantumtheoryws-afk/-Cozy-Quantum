@@ -17,7 +17,7 @@ export const geminiService = {
       return `https://via.placeholder.com/400x300?text=${encodeURIComponent(prompt.substring(0, 20))}`;
   },
 
-  speakAsArtie: async (text: string): Promise<string> => {
+  speakAsArtie: async (text: string): Promise<ArrayBuffer> => {
       console.log(`Speaking: ${text}`);
       try {
         const projectUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -34,12 +34,19 @@ export const geminiService = {
 
         if (!response.ok) throw new Error("Audio generation failed");
         
-        const arrayBuffer = await response.arrayBuffer();
-        const binary = String.fromCharCode(...new Uint8Array(arrayBuffer));
-        return window.btoa(binary);
+        return await response.arrayBuffer();
+
       } catch (e) {
         console.warn("Falling back to local mock audio due to error:", e);
-        return "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="; 
+        // Return a silent 1-second buffer (WAV header)
+        const silentWavBase64 = "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+        const binary_string = window.atob(silentWavBase64);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
       }
   },
   
