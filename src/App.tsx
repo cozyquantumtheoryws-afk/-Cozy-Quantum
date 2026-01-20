@@ -251,34 +251,35 @@ const App: React.FC = () => {
         </div>
 
         {activeTab === 'shop' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {BOOKS.map(book => (
-              <div key={book.id} className="bg-white/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-mystic-purple/20 transition-all duration-500 border border-white flex flex-col group">
-                <div className="relative aspect-[3/4] bg-magical-100 overflow-hidden">
-                  <img src={customCovers[book.id] || book.image} alt={book.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${generatingBookId === book.id ? 'opacity-30 blur-sm' : ''}`} />
-                  <div className="absolute inset-0 bg-magical-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <button onClick={() => playFullStory(book)} className="bg-white/10 backdrop-blur-md p-4 rounded-full text-white hover:bg-white hover:text-magical-900 hover:scale-110 transition-all shadow-lg border border-white/20">
-                      {playingBook?.id === book.id && isPlaying ? <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> : <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>}
-                    </button>
-                  </div>
-                  {generatingBookId === book.id && <div className="absolute inset-0 flex items-center justify-center bg-white/40"><div className="w-8 h-8 border-4 border-magical-600 border-t-transparent rounded-full animate-spin"></div></div>}
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-magical-900 mb-2 serif leading-tight group-hover:text-magical-700 transition-colors">{book.title}</h3>
-                  <p className="text-sm text-magical-500 mb-6 italic leading-relaxed">"{book.problem}"</p>
-                  <div className="mt-auto flex items-center justify-between border-t border-magical-100 pt-4">
-                    <div className="flex flex-col">
-                      <span className="text-mystic-teal font-bold">{book.price}</span>
-                      <span className="text-[10px] text-magical-400 uppercase font-mono">{book.wordCount} words</span>
+          <div className="flex justify-end">
+            <div className="w-full lg:w-2/3 xl:w-1/2">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {BOOKS.map(book => (
+                  <div key={book.id} className="bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg border border-white/40 flex flex-col group hover:bg-white/95 transition-all duration-300">
+                    <div className="relative aspect-video bg-magical-100 overflow-hidden">
+                      <img src={customCovers[book.id] || book.image} alt={book.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${generatingBookId === book.id ? 'opacity-30 blur-sm' : ''}`} />
+                      <div className="absolute inset-0 bg-magical-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                        <button onClick={() => playFullStory(book)} className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white hover:bg-white hover:text-magical-900 hover:scale-110 transition-all shadow-lg border border-white/40">
+                          {playingBook?.id === book.id && isPlaying ? <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> : <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>}
+                        </button>
+                      </div>
+                      {generatingBookId === book.id && <div className="absolute inset-0 flex items-center justify-center bg-white/40"><div className="w-8 h-8 border-4 border-magical-600 border-t-transparent rounded-full animate-spin"></div></div>}
                     </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => generateBookCover(book)} className="p-2 border border-magical-200 text-magical-400 rounded-lg hover:bg-magical-50 hover:text-magical-600 transition-colors"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
-                      <button onClick={() => playFullStory(book)} className="bg-magical-800 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-magical-900 transition-colors shadow-lg shadow-magical-900/10">Listen Full Story</button>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-lg font-bold text-magical-900 mb-1 serif leading-tight">{book.title}</h3>
+                      <p className="text-xs text-magical-500 mb-4 italic leading-relaxed line-clamp-2">"{book.problem}"</p>
+                      <div className="mt-auto flex items-center justify-between border-t border-magical-100 pt-3">
+                        <span className="text-mystic-teal font-bold">{book.price}</span>
+                        <div className="flex gap-2">
+                          <button onClick={() => generateBookCover(book)} className="p-1.5 border border-magical-200 text-magical-400 rounded-lg hover:bg-magical-50 hover:text-magical-600 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+                          <button onClick={() => playFullStory(book)} className="bg-magical-800 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-magical-900 transition-colors shadow-md">Audition</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         )}
 
