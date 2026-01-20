@@ -4,7 +4,35 @@ import type { ImageSize } from '../types';
 export const geminiService = {
   generateStoryScript: async (title: string, problem: string, resolution: string): Promise<string> => {
     console.log(`Generating story for ${title}...`);
-    return new Promise(resolve => setTimeout(() => resolve(`Artie looked at the ${problem} and sighed. "Well," he said, "time to apply some quantum grease." He proceeded to implement the resolution: ${resolution}. The end.`), 1000));
+    
+    const intros = [
+      "You know, folks, another Tuesday in Observation Bay, another breach in the fabric of spacetime.",
+      "I was just sitting down to my Earl Grey when the sensors went wild.",
+      "The thing about quantum mechanics is, it never lets you finish your sandwich."
+    ];
+    
+    const connectors = [
+      `I looked over and saw that ${problem.toLowerCase()}`,
+      `Turns out, ${problem.toLowerCase()}`,
+      `The diagnostics confirmed it: ${problem.toLowerCase()}`
+    ];
+    
+    const tools = [
+      "So I grabbed my non-euclidean wrench.",
+      "I dusted off the Reality Anchor.",
+      "I had to recalibrate the Sonic Plunger."
+    ];
+    
+    const resolutions = [
+      `It took a steady hand, but by ${resolution.toLowerCase()}, I managed to stabilize the field.`,
+      `There was no other choice. I ended up ${resolution.toLowerCase()}. works every time.`,
+      `With a little bit of ${resolution.toLowerCase()}, the waveform smoothed right out.`
+    ];
+
+    const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+    
+    return new Promise(resolve => setTimeout(() => 
+      resolve(`${pick(intros)} ${pick(connectors)} ${pick(tools)} ${pick(resolutions)}`), 1000));
   },
   
   generateStoryboardPrompts: async (_storyText: string): Promise<string[]> => {
