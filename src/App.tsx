@@ -124,59 +124,114 @@ const App: React.FC = () => {
         setVisualsLoading(false);
       }
 
-      // 3. TTS Narration (simplified and sequential)
+      // 3. TTS Narration (State-based Sequencer)
       const audioCtx = audioContextRef.current;
       if (!audioCtx) throw new Error("Audio context not initialized.");
 
       // Split story text into lines for narration
       const narrationLines = storyText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
+      
+      // Store lines in ref to access inside effects without stale closures if needed, 
+      // but splitting here is fine if storyText is stable.
+      // We will use a separate effect to trigger playback when currentIndex changes.
 
-      const playNextLine = async (index: number) => {
+      // Start the sequence
+      setAudioLoading(true);
+      setIsPlaying(true);
+      setCurrentStoryLineIndex(0);
+
+      const playCurrentLine = async (index: number) => {
         if (index >= narrationLines.length) {
-          setIsPlaying(false);
-          setAudioLoading(false);
-          return;
+           setIsPlaying(false);
+           setAudioLoading(false);
+           return;
         }
 
         const currentLine = narrationLines[index];
-        // Note: visual highlighting logic removed for simplicity
-        
         setAudioLoading(true);
-        setIsPlaying(true);
 
         try {
           const audioBuffer = await geminiService.speakAsArtie(currentLine);
-          const decodedBuffer = await decodeAudioData(audioBuffer, audioCtx);
-
-          const source = audioCtx.createBufferSource();
-          source.buffer = decodedBuffer;
-          source.connect(audioCtx.destination);
-          source.onended = () => {
-            currentSourceRef.current = null;
-            playNextLine(index + 1); // Auto-play next
-          };
-          source.start();
-          currentSourceRef.current = source;
-        } catch (lineError) {
-          console.error("Error narrating line:", lineError);
-          // Don't kill the whole loop, just try next or stop
-          setIsPlaying(false);
-          setAudioLoading(false);
-        }
-      };
-      
-      playNextLine(0); // Start narration from the first line
-
+          
+          // Double check if we are still playing before starting audio
+          if (!audioRef.current && isPlaying) { // audioRef.current is the source
+             // Actually, we need to respect the latest state. 
+             // decoding...
+             const decodedBuffer = await decodeAudioData(audioBuffer, audioCtx);
+             
+             const source = audioCtx.createBufferSource();
+             source.buffer = decodedBuffer;
+             source.connect(audioCtx.destination);
+             
+             source.onended = () => {
+               currentSourceRef.current = null;
+               // Advance to next line
+               setCurrentStoryLineIndex(prev => prev + 1);
+             };
+             
+             source.start();
+             currentSourceRef.current = source;
+             setAudioLoading(false);
+          }
+        } catch (err: any) {
+          console.error("Audio Playback Error:", err);
+          setErrorMessage(`Audio Error: ${err.message || 'Unknown'}. key set?`);
     } catch (error: any) {
       console.error("Narrative Error:", error);
       const isInternalError = error.message?.includes("500") || error.message?.includes("internal error");
-      setErrorMessage(isInternalError ? "Artie's notes are a bit scrambled right now (Internal Error). Try once more!" : error.message);
+      setErrorMessage(isInternalError ? "Artie's notes are a bit scrambled right now (Internal Error). Try once more!" : `Error: ${error.message}`);
       setAudioLoading(false);
       setVisualsLoading(false);
     } finally {
       setAudioLoading(false);
     }
   };
+
+  const narrationLinesRef = useRef<string[]>([]);
+  const [currentStoryLineIndex, setCurrentStoryLineIndex] = useState(0);
+
+  // Effect to play audio when line index changes
+  useEffect(() => {
+    // Only play if we are officially 'playing' and have lines
+    if (!isPlaying || !audioContextRef.current || narrationLinesRef.current.length === 0) return;
+    
+    // Safety check index
+    if (currentStoryLineIndex < narrationLinesRef.current.length) {
+        const line = narrationLinesRef.current[currentStoryLineIndex];
+        
+        const playLine = async () => {
+            setAudioLoading(true);
+            try {
+                if (!geminiService) return;
+                const buffer = await geminiService.speakAsArtie(line);
+                if (!audioContextRef.current) return;
+                
+                const decoded = await decodeAudioData(buffer, audioContextRef.current);
+                const source = audioContextRef.current.createBufferSource();
+                source.buffer = decoded;
+                source.connect(audioContextRef.current.destination);
+                source.onended = () => {
+                    currentSourceRef.current = null; // Clear ref when done
+                    setCurrentStoryLineIndex(i => i + 1);
+                };
+                source.start();
+                currentSourceRef.current = source;
+                setAudioLoading(false);
+            } catch (e: any) {
+                console.error("Line Playback Failed", e);
+                setErrorMessage(`Audio Error: ${e.message || 'Unknown'}. Key set?`);
+                // Skip to next line on error so we don't get stuck
+                setCurrentStoryLineIndex(i => i + 1);
+            }
+        };
+        playLine();
+    } else {
+        // All lines played
+        setIsPlaying(false);
+        setAudioLoading(false);
+        setCurrentStoryLineIndex(0); // Reset for next play
+    }
+  }, [currentStoryLineIndex, isPlaying]); // Dependencies for the effect
 
   const generateBookCover = async (book: Book) => {
     if (!hasApiKey) {
