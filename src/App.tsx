@@ -150,6 +150,24 @@ const App: React.FC = () => {
     }
   };
 
+  const audioCacheRef = useRef<Map<number, AudioBuffer>>(new Map());
+
+  // Helper to fetch and cache a specific line
+  const preloadLine = async (index: number) => {
+    if (index >= narrationLinesRef.current.length || audioCacheRef.current.has(index)) return;
+    
+    try {
+      const line = narrationLinesRef.current[index];
+      const buffer = await geminiService.speakAsArtie(line);
+      if (audioContextRef.current) {
+        const decoded = await decodeAudioData(buffer, audioContextRef.current);
+        audioCacheRef.current.set(index, decoded);
+      }
+    } catch (e) {
+      console.warn(`Failed to preload line ${index}`, e);
+    }
+  };
+
   // Effect to play audio when line index changes
   useEffect(() => {
     // Only play if we are officially 'playing' and have lines
@@ -157,39 +175,57 @@ const App: React.FC = () => {
     
     // Safety check index
     if (currentStoryLineIndex < narrationLinesRef.current.length) {
-        const line = narrationLinesRef.current[currentStoryLineIndex];
         
         const playLine = async () => {
-            setAudioLoading(true);
-            try {
-                if (!geminiService) return;
-                const buffer = await geminiService.speakAsArtie(line);
-                if (!audioContextRef.current) return;
-                
-                const decoded = await decodeAudioData(buffer, audioContextRef.current);
-                const source = audioContextRef.current.createBufferSource();
-                source.buffer = decoded;
-                source.connect(audioContextRef.current.destination);
-                source.onended = () => {
-                    currentSourceRef.current = null; // Clear ref when done
-                    setCurrentStoryLineIndex(i => i + 1);
-                };
-                source.start();
-                currentSourceRef.current = source;
-                setAudioLoading(false);
-            } catch (e: any) {
-                console.error("Line Playback Failed", e);
-                setErrorMessage(`Audio Error: ${e.message || 'Unknown'}. Key set?`);
-                // Skip to next line on error so we don't get stuck
-                setCurrentStoryLineIndex(i => i + 1);
+            // Check cache first
+            let decoded: AudioBuffer | undefined = audioCacheRef.current.get(currentStoryLineIndex);
+            
+            if (!decoded) {
+               setAudioLoading(true);
+               // Cache miss - fetch now
+               const line = narrationLinesRef.current[currentStoryLineIndex];
+               try {
+                  const buffer = await geminiService.speakAsArtie(line);
+                  if (audioContextRef.current) {
+                     decoded = await decodeAudioData(buffer, audioContextRef.current);
+                     // Cache it just in case
+                     audioCacheRef.current.set(currentStoryLineIndex, decoded);
+                  }
+               } catch (e: any) {
+                  console.error("Line Playback Failed", e);
+                  setErrorMessage(`Audio Error: ${e.message || 'Unknown'}`);
+                  setCurrentStoryLineIndex(i => i + 1);
+                  return;
+               }
+               setAudioLoading(false);
             }
+
+            if (!decoded || !audioContextRef.current) return;
+
+            // Start Playback
+            const source = audioContextRef.current.createBufferSource();
+            source.buffer = decoded;
+            source.connect(audioContextRef.current.destination);
+            
+            source.onended = () => {
+                currentSourceRef.current = null;
+                setCurrentStoryLineIndex(i => i + 1);
+            };
+            
+            source.start();
+            currentSourceRef.current = source;
+            
+            // WHILE PLAYING: Preload the next 2 lines
+            preloadLine(currentStoryLineIndex + 1);
+            preloadLine(currentStoryLineIndex + 2);
         };
+        
         playLine();
     } else {
         // All lines played
         setIsPlaying(false);
         setAudioLoading(false);
-        setCurrentStoryLineIndex(0); // Reset for next play
+        setCurrentStoryLineIndex(0); 
     }
   }, [currentStoryLineIndex, isPlaying]);
 
