@@ -19,8 +19,28 @@ export const geminiService = {
 
   speakAsArtie: async (text: string): Promise<string> => {
       console.log(`Speaking: ${text}`);
-      // Return a very short silent MP3 base64 or similar dummy data
-      return "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="; 
+      try {
+        const projectUrl = import.meta.env.VITE_SUPABASE_URL;
+        const functionUrl = `${projectUrl}/functions/v1/generate-audio`;
+        
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ text })
+        });
+
+        if (!response.ok) throw new Error("Audio generation failed");
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const binary = String.fromCharCode(...new Uint8Array(arrayBuffer));
+        return window.btoa(binary);
+      } catch (e) {
+        console.warn("Falling back to local mock audio due to error:", e);
+        return "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="; 
+      }
   },
   
   generateCover: async (prompt: string, size: ImageSize): Promise<string> => {
