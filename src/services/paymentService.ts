@@ -17,9 +17,11 @@ export const paymentService = {
       } else {
         throw new Error("No URL returned from checkout session");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout Error:', error);
-      alert('Failed to initiate checkout sequences. The quantum cash register is jammed.');
+      // Try to get the actual message from the server response if available
+      const msg = error.message || error.toString();
+      alert(`Checkout Failed: ${msg}`);
     }
   }
 };
