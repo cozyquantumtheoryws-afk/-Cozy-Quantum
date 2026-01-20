@@ -223,10 +223,11 @@ const App: React.FC = () => {
         
         playLine();
     } else {
-        // All lines played
+        // All lines played - Auto Close after a brief moment
         setIsPlaying(false);
         setAudioLoading(false);
-        setCurrentStoryLineIndex(0); 
+        setCurrentStoryLineIndex(0);
+        setTimeout(() => setPlayingBook(null), 2000); // Give them 2s to realize it's over, then close
     }
   }, [currentStoryLineIndex, isPlaying]);
 
@@ -362,6 +363,15 @@ const App: React.FC = () => {
       {playingBook && (
         <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-amber-100 p-6 flex flex-col items-center z-50 shadow-2xl animate-in slide-in-from-bottom duration-500">
           <div className="max-w-4xl w-full">
+            {/* Close Button */}
+            <button 
+              onClick={() => { stopAudio(); setPlayingBook(null); }}
+              className="absolute -top-12 right-0 bg-white/90 backdrop-blur text-gray-600 p-2 rounded-full shadow-md hover:bg-white hover:text-red-600 transition-colors"
+              title="Close Player"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
             {errorMessage && (
               <div className="mb-4 p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-100 flex items-center justify-between">
                 <span>{errorMessage}</span>
