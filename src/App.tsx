@@ -251,7 +251,7 @@ const App: React.FC = () => {
         </div>
 
         {activeTab === 'shop' && (
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             <div className="w-full lg:w-2/3 xl:w-1/2">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {BOOKS.map(book => (
