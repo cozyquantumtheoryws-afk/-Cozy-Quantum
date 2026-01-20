@@ -271,6 +271,11 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+      
+      <footer className="text-center py-8 text-magical-400 text-xs font-serif opacity-60">
+        <p>&copy; 2026 E.L. Finch. All timelines reserved.</p>
+        <p className="mt-1">Recorded in Observation Bay.</p>
+      </footer>
 
       {/* Persistent Audio & Visual Story Player */}
       {playingBook && (
