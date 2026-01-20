@@ -28,5 +28,23 @@ export const BOOKS: Book[] = [
     image: "https://images.unsplash.com/photo-1599009434802-ca1dd09895e7?q=80&w=600&auto=format&fit=crop", // Safe placeholder for Gnomes
     price: "$1.99",
     wordCount: 11000
+  },
+  {
+    id: 4,
+    title: "The Clock That Ticks Sideways",
+    problem: "Grandfather's clock has started measuring duration in spatial dimensions, causing the hallway to lengthen every hour.",
+    resolution: "Installing a 4D gimbal on the pendulum and lubricating the gears with tachyon oil.",
+    image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&auto=format&fit=crop",
+    price: "$1.99",
+    wordCount: 13200
+  },
+  {
+    id: 5,
+    title: "A Cat Named Probability",
+    problem: "The shop cat is simultaneously asleep on the counter and knocking over mugs in the pantry.",
+    resolution: "Collapsing the wave function with the sound of a can opener.",
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600&auto=format&fit=crop",
+    price: "$1.99",
+    wordCount: 10500
   }
 ];
