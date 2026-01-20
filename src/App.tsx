@@ -7,6 +7,7 @@ import GithubSync from './components/GithubSync';
 import { geminiService, decodeAudioData } from './services/geminiService';
 import type { Book } from './types';
 import { paymentService } from './services/paymentService';
+import { Footer } from './components/Footer';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'shop' | 'desk' | 'community'>('shop');
@@ -355,10 +356,7 @@ const App: React.FC = () => {
         )}
       </main>
       
-      <footer className="text-center py-8 text-magical-400 text-xs font-serif opacity-60">
-        <p>&copy; 2026 E.L. Finch. All timelines reserved.</p>
-        <p className="mt-1">Recorded in Observation Bay.</p>
-      </footer>
+      <Footer />
 
       {/* Persistent Audio & Visual Story Player */}
       {playingBook && (
