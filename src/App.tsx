@@ -256,7 +256,7 @@ const App: React.FC = () => {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {BOOKS.map(book => (
                   <div key={book.id} className="bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg border border-white/40 flex flex-col group hover:bg-white/95 transition-all duration-300">
-                    <div className="relative aspect-video bg-magical-100 overflow-hidden">
+                    <div className="relative aspect-[3/4] bg-magical-100 overflow-hidden">
                       <img src={customCovers[book.id] || book.image} alt={book.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${generatingBookId === book.id ? 'opacity-30 blur-sm' : ''}`} />
                       <div className="absolute inset-0 bg-magical-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                         <button onClick={() => playFullStory(book)} className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white hover:bg-white hover:text-magical-900 hover:scale-110 transition-all shadow-lg border border-white/40">
