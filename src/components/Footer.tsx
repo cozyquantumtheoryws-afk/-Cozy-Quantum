@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-sm font-bold text-magical-800 uppercase tracking-wider mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-magical-600">
               <li><span className="block">Observation Bay, Sector 7G</span></li>
-              <li><a href="mailto:artie@cozyquantum.com" className="hover:text-magical-900 transition-colors">artie@cozyquantum.com</a></li>
+              <li><a href="mailto:cozyquantumtheoryws@gmail.com" className="hover:text-magical-900 transition-colors">cozyquantumtheoryws@gmail.com</a></li>
               <li className="flex gap-4 mt-4">
                  {/* Social Icons Placeholder */}
                  <div className="w-5 h-5 bg-magical-300 rounded-full opacity-50 hover:opacity-100 cursor-pointer"></div>
