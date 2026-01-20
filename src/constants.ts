@@ -6,7 +6,7 @@ export const BOOKS: Book[] = [
     id: 1,
     title: "The Hum at Hex-Key Harbor",
     problem: "A melancholic foghorn has started broadcasting anxieties from a parallel dimension, turning the morning mist blue.",
-    resolution: "Tuning the harbor's frequency to a cheerful C-Major and applying semantic dampeners.",
+    resolution: "Holding a therapeutic session with the lighthouse and tuning the beam to 'Joyful C-Major'.",
     image: "https://images.unsplash.com/photo-1496568816309-51d7c20e3b21?q=80&w=600&auto=format&fit=crop", // Safe placeholder for Harbor
     price: "$1.99",
     wordCount: 12000
@@ -15,7 +15,7 @@ export const BOOKS: Book[] = [
     id: 2,
     title: "Toaster of Infinite Toast",
     problem: "A vintage appliance is drawing carbohydrates from a grain-heavy multiverse, filling the kitchen with localized causality violations.",
-    resolution: "Reversing the polarity of the crumb tray and installing a chronometric limiter.",
+    resolution: "Sketching a 'Do Not Enter' glyph in butter on the primary slot.",
     image: "/covers/toaster_cover.png",
     price: "$1.99",
     wordCount: 14500
@@ -24,7 +24,7 @@ export const BOOKS: Book[] = [
     id: 3,
     title: "Gravity-Defying Garden Gnomes",
     problem: "The lawn ornaments have internalized quantum superposition and are currently floating three feet above the daffodils.",
-    resolution: "Lead-lining their boots and explaining the concept of 'Down' using a very dense diagram.",
+    resolution: "Reading them the 'Laws of Thermodynamics' until they get bored and drift back down.",
     image: "https://images.unsplash.com/photo-1599009434802-ca1dd09895e7?q=80&w=600&auto=format&fit=crop", // Safe placeholder for Gnomes
     price: "$1.99",
     wordCount: 11000
@@ -33,7 +33,7 @@ export const BOOKS: Book[] = [
     id: 4,
     title: "The Clock That Ticks Sideways",
     problem: "Grandfather's clock has started measuring duration in spatial dimensions, causing the hallway to lengthen every hour.",
-    resolution: "Installing a 4D gimbal on the pendulum and lubricating the gears with tachyon oil.",
+    resolution: "Politely asking the pendulum to respect the concept of 'Tomorrow' instead of 'Left'.",
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&auto=format&fit=crop",
     price: "$1.99",
     wordCount: 13200
