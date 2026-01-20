@@ -8,25 +8,35 @@ export const geminiService = {
     const intros = [
       "You know, folks, another Tuesday in Observation Bay, another breach in the fabric of spacetime.",
       "I was just sitting down to my Earl Grey when the sensors went wild.",
-      "The thing about quantum mechanics is, it never lets you finish your sandwich."
+      "The thing about quantum mechanics is, it never lets you finish your sandwich.",
+      "So there I was, minding my own business, reorganizing my collection of spare event horizons.",
+      "It started with a sound like a rubber duck falling down a staircase made of xylophones.",
+      "Observation Bay is quiet usually, except when the laws of physics decide to take a personal day."
     ];
     
     const connectors = [
       `I looked over and saw that ${problem.toLowerCase()}`,
       `Turns out, ${problem.toLowerCase()}`,
-      `The diagnostics confirmed it: ${problem.toLowerCase()}`
+      `The diagnostics confirmed it: ${problem.toLowerCase()}`,
+      `My first thought was 'Oh boy', because ${problem.toLowerCase()}`,
+      `Naturally, it was because ${problem.toLowerCase()}`
     ];
     
     const tools = [
       "So I grabbed my non-euclidean wrench.",
       "I dusted off the Reality Anchor.",
-      "I had to recalibrate the Sonic Plunger."
+      "I had to recalibrate the Sonic Plunger.",
+      "I reached for the probability mallet.",
+      "I fired up the Heisenberg Compensator.",
+      "I pulled out the old Quantum Duct Tape."
     ];
     
     const resolutions = [
       `It took a steady hand, but by ${resolution.toLowerCase()}, I managed to stabilize the field.`,
-      `There was no other choice. I ended up ${resolution.toLowerCase()}. works every time.`,
-      `With a little bit of ${resolution.toLowerCase()}, the waveform smoothed right out.`
+      `There was no other choice. I ended up ${resolution.toLowerCase()}. Works every time.`,
+      `With a little bit of ${resolution.toLowerCase()}, the waveform smoothed right out.`,
+      `A classic fix: ${resolution.toLowerCase()}. Good as new.`,
+      `After ${resolution.toLowerCase()}, the readings returned to normal. Mostly.`
     ];
 
     const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
