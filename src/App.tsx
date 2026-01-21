@@ -247,10 +247,41 @@ const App: React.FC = () => {
         setHasApiKey(false);
         await handleOpenKeySelector();
       }
-    } finally {
       setGeneratingBookId(null);
     }
   };
+
+  // Check for Payment Success Return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment_success') === 'true') {
+        const bookId = Number(params.get('book_id'));
+        if (bookId) {
+            setPlayingBook(BOOKS.find(b => b.id === bookId) || null);
+            // Show Success Alert (In a real app, use a nice modal)
+            setTimeout(() => {
+                const book = BOOKS.find(b => b.id === bookId);
+                if (confirm(`PAYMENT SUCCESSFUL!\n\nThank you for purchasing "${book?.title}".\n\nWould you like to download your copy now?`)) {
+                    // Generate a simple text file download for the book
+                    const element = document.createElement("a");
+                    const file = new Blob([
+                        `THE WAVEFORM HANDYMAN: VOL ${book?.id}\n`,
+                        `${book?.title.toUpperCase()}\n\n`,
+                        `PROBLEM:\n${book?.problem}\n\n`,
+                        `RESOLUTION:\n${book?.resolution}\n\n`,
+                        `Full EPUB delivery is coming soon to your email.`
+                    ], {type: 'text/plain'});
+                    element.href = URL.createObjectURL(file);
+                    element.download = `Waveform_Handyman_Vol_${book?.id}.txt`;
+                    document.body.appendChild(element);
+                    element.click();
+                }
+                // Clear URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }, 500);
+        }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen pb-40 bg-magical-50 bg-hero-pattern bg-cover bg-fixed bg-center">
