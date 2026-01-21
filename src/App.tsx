@@ -7,6 +7,7 @@ import GithubSync from './components/GithubSync';
 import { geminiService, decodeAudioData } from './services/geminiService';
 import type { Book } from './types';
 import { paymentService } from './services/paymentService';
+import { supabase } from './lib/supabaseClient';
 import { Footer } from './components/Footer';
 import { MarketingDashboard } from './components/MarketingDashboard';
 
@@ -257,26 +258,51 @@ const App: React.FC = () => {
     if (params.get('payment_success') === 'true') {
         const bookId = Number(params.get('book_id'));
         if (bookId) {
-            setPlayingBook(BOOKS.find(b => b.id === bookId) || null);
-            // Show Success Alert (In a real app, use a nice modal)
-            setTimeout(() => {
-                const book = BOOKS.find(b => b.id === bookId);
-                if (confirm(`PAYMENT SUCCESSFUL!\n\nThank you for purchasing "${book?.title}".\n\nWould you like to download your copy now?`)) {
-                    // Generate a simple text file download for the book
+            const book = BOOKS.find(b => b.id === bookId);
+            setPlayingBook(book || null);
+            
+            // Show Success Modal
+            setTimeout(async () => {
+                const choice = confirm(
+                    `🎉 PAYMENT SUCCESSFUL!\n\n` +
+                    `Thank you for purchasing "${book?.title}".\n\n` +
+                    `Click OK to download your audiobook (MP3)\n` +
+                    `Click Cancel for text version`
+                );
+                
+                if (choice) {
+                    // Try to get audio download URL
+                    try {
+                        const { data } = await supabase.functions.invoke('get-download-url', {
+                            body: { bookId, assetType: 'audio' }
+                        });
+                        
+                        if (data?.url) {
+                            window.open(data.url, '_blank');
+                        } else if (data?.pending) {
+                            alert(`Audio is still being generated. In the meantime, enjoy streaming it in the player below!\n\nYour file will be emailed when ready.`);
+                        }
+                    } catch (e) {
+                        console.error('Download error:', e);
+                        alert('Audio download temporarily unavailable. You can stream it using the Play button.');
+                    }
+                } else {
+                    // Download text version
                     const element = document.createElement("a");
                     const file = new Blob([
                         `THE WAVEFORM HANDYMAN: VOL ${book?.id}\n`,
                         `${book?.title.toUpperCase()}\n\n`,
                         `PROBLEM:\n${book?.problem}\n\n`,
                         `RESOLUTION:\n${book?.resolution}\n\n`,
-                        `Full EPUB delivery is coming soon to your email.`
+                        `Thank you for your purchase!`
                     ], {type: 'text/plain'});
                     element.href = URL.createObjectURL(file);
                     element.download = `Waveform_Handyman_Vol_${book?.id}.txt`;
                     document.body.appendChild(element);
                     element.click();
                 }
-                // Clear URL
+                
+                // Clear URL params
                 window.history.replaceState({}, document.title, window.location.pathname);
             }, 500);
         }
