@@ -175,6 +175,27 @@ const App: React.FC = () => {
     }
   };
 
+  const ambienceRef = useRef<HTMLAudioElement | null>(null);
+
+  // Ambience Effect
+  useEffect(() => {
+    if (playingBook?.audioAmbience && isPlaying) {
+      if (ambienceRef.current) {
+        // Only change src if it's different to avoid reloading
+        const currentSrc = ambienceRef.current.src.replace(window.location.origin, '');
+        if (currentSrc !== playingBook.audioAmbience) {
+            ambienceRef.current.src = playingBook.audioAmbience;
+        }
+        ambienceRef.current.volume = 0.15; // Low background volume
+        ambienceRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+      }
+    } else {
+      if (ambienceRef.current) {
+        ambienceRef.current.pause();
+      }
+    }
+  }, [playingBook, isPlaying]);
+
   // Effect to play audio when line index changes
   useEffect(() => {
     // Only play if we are officially 'playing' and have lines
@@ -460,6 +481,9 @@ const App: React.FC = () => {
       </main>
       
       <Footer />
+      
+      {/* Hidden Ambience Player */}
+      <audio ref={ambienceRef} loop />
 
       {/* Persistent Audio & Visual Story Player */}
       {playingBook && (

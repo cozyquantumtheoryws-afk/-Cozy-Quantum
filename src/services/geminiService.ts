@@ -40,7 +40,11 @@ export const geminiService = {
     }
     
     // Fallback: generate based on book details if no script in database
-    const intros = [
+    const intros = bookId === 1 ? [
+      "The fog this morning had a peculiar shade of blue, carrying the sound of a horn that wasn't there.",
+      "It started low, a rumble from the harbor that vibrated the teaspoons off the counter.",
+      "They say the sea has secrets, but this specific secret was broadcasting at 40 hertz.",
+    ] : [
       "You know, folks, another Tuesday in Observation Bay, another breach in the fabric of spacetime.",
       "I was just sitting down to my Earl Grey when the sensors went wild.",
       "The thing about quantum mechanics is, it never lets you finish your sandwich.",
