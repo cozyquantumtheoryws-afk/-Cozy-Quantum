@@ -137,8 +137,9 @@ const App: React.FC = () => {
       const audioCtx = audioContextRef.current;
       if (!audioCtx) throw new Error("Audio context not initialized.");
 
-      // Split story text into lines for narration
-      const narrationLines = storyText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
+      // Split story text into paragraphs for better narration flow (preserves 'Mr.', 'Mrs.', etc.)
+      // The script is joined by \n\n, so we split by that.
+      const narrationLines = storyText.split(/\n\s*\n/).map(s => s.trim()).filter(s => s.length > 0);
       narrationLinesRef.current = narrationLines; 
 
       // Start the sequence
