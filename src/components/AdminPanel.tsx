@@ -6,10 +6,13 @@ interface AudioStatus {
   [bookId: number]: 'pending' | 'generating' | 'success' | 'error';
 }
 
+import { MarketingDashboard } from './MarketingDashboard';
+
 export const AdminPanel: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
+  const [activeAdminTab, setActiveAdminTab] = useState<'audio' | 'marketing'>('audio');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,93 +109,113 @@ export const AdminPanel: React.FC = () => {
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-magical-200 h-full flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-magical-900 to-magical-700 text-white p-6">
-        <h2 className="text-2xl font-bold serif flex items-center gap-3">
-          <span className="text-3xl">🔧</span> Admin Control Panel
-        </h2>
-        <p className="text-magical-300 text-sm mt-1">Audio Generation & Asset Management</p>
+      <div className="bg-gradient-to-r from-magical-900 to-magical-700 text-white p-6 flex justify-between items-center">
+        <div>
+            <h2 className="text-2xl font-bold serif flex items-center gap-3">
+              <span className="text-3xl">🔧</span> Admin Control Panel
+            </h2>
+            <p className="text-magical-300 text-sm mt-1">Authorized Personnel Only</p>
+        </div>
+        <div className="flex gap-2">
+            <button 
+                onClick={() => setActiveAdminTab('audio')}
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeAdminTab === 'audio' ? 'bg-white text-magical-900' : 'bg-magical-800 text-magical-300 hover:text-white'}`}
+            >
+                Audio Gen
+            </button>
+            <button 
+                onClick={() => setActiveAdminTab('marketing')}
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeAdminTab === 'marketing' ? 'bg-white text-magical-900' : 'bg-magical-800 text-magical-300 hover:text-white'}`}
+            >
+                Marketing
+            </button>
+        </div>
       </div>
 
-      <div className="p-8 flex-1 overflow-y-auto">
-        <div className="grid md:grid-cols-2 gap-8">
-          
-          {/* Book List */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-magical-900 flex items-center gap-2">
-              <span>📚</span> Audio File Status
-            </h3>
+      <div className="flex-1 overflow-y-auto">
+        {activeAdminTab === 'marketing' ? (
+            <MarketingDashboard />
+        ) : (
+            <div className="p-8 grid md:grid-cols-2 gap-8">
             
-            <div className="space-y-2">
-              {BOOKS.map(book => (
-                <div key={book.id} className="flex items-center justify-between p-3 bg-magical-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{getStatusIcon(book.id)}</span>
-                    <div>
-                      <p className="font-bold text-sm text-magical-900">Vol {book.id}</p>
-                      <p className="text-xs text-magical-600 truncate max-w-[200px]">{book.title}</p>
+            {/* Book List */}
+            <div className="space-y-4">
+                <h3 className="text-lg font-bold text-magical-900 flex items-center gap-2">
+                <span>📚</span> Audio File Status
+                </h3>
+                
+                <div className="space-y-2">
+                {BOOKS.map(book => (
+                    <div key={book.id} className="flex items-center justify-between p-3 bg-magical-50 rounded-xl">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xl">{getStatusIcon(book.id)}</span>
+                        <div>
+                        <p className="font-bold text-sm text-magical-900">Vol {book.id}</p>
+                        <p className="text-xs text-magical-600 truncate max-w-[200px]">{book.title}</p>
+                        </div>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => generateAudioForBook(book.id)}
-                    disabled={audioStatus[book.id] === 'generating' || isGeneratingAll}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      audioStatus[book.id] === 'generating' 
-                        ? 'bg-gray-200 text-gray-400 cursor-wait'
-                        : 'bg-mystic-teal text-white hover:bg-magical-700'
-                    }`}
-                  >
-                    {audioStatus[book.id] === 'generating' ? 'Working...' : 'Generate'}
-                  </button>
+                    <button
+                        onClick={() => generateAudioForBook(book.id)}
+                        disabled={audioStatus[book.id] === 'generating' || isGeneratingAll}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        audioStatus[book.id] === 'generating' 
+                            ? 'bg-gray-200 text-gray-400 cursor-wait'
+                            : 'bg-mystic-teal text-white hover:bg-magical-700'
+                        }`}
+                    >
+                        {audioStatus[book.id] === 'generating' ? 'Working...' : 'Generate'}
+                    </button>
+                    </div>
+                ))}
                 </div>
-              ))}
+
+                <button
+                onClick={generateAllAudio}
+                disabled={isGeneratingAll}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
+                    isGeneratingAll 
+                    ? 'bg-gray-300 text-gray-500 cursor-wait'
+                    : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-lg'
+                }`}
+                >
+                {isGeneratingAll ? (
+                    <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Generating All...
+                    </>
+                ) : (
+                    <>🎙️ Generate All 5 Audiobooks</>
+                )}
+                </button>
             </div>
 
-            <button
-              onClick={generateAllAudio}
-              disabled={isGeneratingAll}
-              className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
-                isGeneratingAll 
-                  ? 'bg-gray-300 text-gray-500 cursor-wait'
-                  : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-lg'
-              }`}
-            >
-              {isGeneratingAll ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Generating All...
-                </>
-              ) : (
-                <>🎙️ Generate All 5 Audiobooks</>
-              )}
-            </button>
-          </div>
-
-          {/* Log Console */}
-          <div className="flex flex-col">
-            <h3 className="text-lg font-bold text-magical-900 flex items-center gap-2 mb-4">
-              <span>📋</span> Generation Log
-            </h3>
-            <div className="flex-1 bg-magical-950 rounded-xl p-4 font-mono text-xs text-green-400 overflow-y-auto max-h-[400px]">
-              {messages.length === 0 ? (
-                <p className="text-magical-500">Waiting for commands...</p>
-              ) : (
-                messages.map((msg, i) => (
-                  <p key={i} className="mb-1">{msg}</p>
-                ))
-              )}
+            {/* Log Console */}
+            <div className="flex flex-col">
+                <h3 className="text-lg font-bold text-magical-900 flex items-center gap-2 mb-4">
+                <span>📋</span> Generation Log
+                </h3>
+                <div className="flex-1 bg-magical-950 rounded-xl p-4 font-mono text-xs text-green-400 overflow-y-auto max-h-[400px]">
+                {messages.length === 0 ? (
+                    <p className="text-magical-500">Waiting for commands...</p>
+                ) : (
+                    messages.map((msg, i) => (
+                    <p key={i} className="mb-1">{msg}</p>
+                    ))
+                )}
+                </div>
+                
+                {messages.length > 0 && (
+                <button 
+                    onClick={() => setMessages([])}
+                    className="mt-2 text-xs text-magical-500 hover:text-magical-700 self-end"
+                >
+                    Clear Log
+                </button>
+                )}
             </div>
-            
-            {messages.length > 0 && (
-              <button 
-                onClick={() => setMessages([])}
-                className="mt-2 text-xs text-magical-500 hover:text-magical-700 self-end"
-              >
-                Clear Log
-              </button>
-            )}
-          </div>
 
-        </div>
+            </div>
+        )}
       </div>
     </div>
   );

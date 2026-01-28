@@ -9,7 +9,7 @@ import type { Book } from './types';
 import { paymentService } from './services/paymentService';
 // import { supabase } from './lib/supabaseClient';
 import { Footer } from './components/Footer';
-import { MarketingDashboard } from './components/MarketingDashboard';
+// import { MarketingDashboard } from './components/MarketingDashboard';
 import { AdminPanel } from './components/AdminPanel';
 
 const App: React.FC = () => {
@@ -352,13 +352,7 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button 
-             onClick={() => setActiveTab('marketing')}
-             className={`p-2 rounded-full transition-colors ${activeTab === 'marketing' ? 'bg-magical-800 text-mystic-teal' : 'text-magical-800/20 hover:text-magical-800'}`}
-             title="Quantum Advertising Channel"
-          >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-          </button>
+
           <button 
              onClick={() => setActiveTab('admin')}
              className={`p-2 rounded-full transition-colors ${activeTab === 'admin' ? 'bg-magical-800 text-amber-400' : 'text-amber-500 hover:text-magical-800 hover:bg-amber-100'}`}
@@ -457,11 +451,7 @@ const App: React.FC = () => {
             ))}
           </div>
         )}
-        {activeTab === 'marketing' && (
-          <div className="h-[calc(100vh-140px)]">
-            <MarketingDashboard />
-          </div>
-        )}
+
         {activeTab === 'admin' && (
           <div className="h-[calc(100vh-140px)]">
             <AdminPanel />
