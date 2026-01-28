@@ -101,8 +101,8 @@ const App: React.FC = () => {
     setErrorMessage(null);
 
     try {
-      // 1. Generate Story Content
-      const storyText = await geminiService.generateStoryScript(book.title, book.problem, book.resolution);
+      // 1. Generate Story Content - now fetches book-specific script from database
+      const storyText = await geminiService.generateStoryScript(book.title, book.problem, book.resolution, book.id);
       if (!storyText) throw new Error("Narrative waveform failed to materialize. Please try again.");
       setCurrentNarratedStory(storyText);
       setGeneratedStories(prev => ({ ...prev, [book.id]: storyText }));
@@ -267,40 +267,56 @@ const App: React.FC = () => {
                 const choice = confirm(
                     `🎉 PAYMENT SUCCESSFUL!\n\n` +
                     `Thank you for purchasing "${book?.title}".\n\n` +
-                    `Click OK to download your audiobook (MP3)\n` +
-                    `Click Cancel for text version`
+                    `Click OK to download your ebook (TXT)\n` +
+                    `Click Cancel to stream the audiobook now`
                 );
                 
                 if (choice) {
-                    // Try to get audio download URL
+                    // Download ebook/text version from database
                     try {
-                        const { data } = await supabase.functions.invoke('get-download-url', {
-                            body: { bookId, assetType: 'audio' }
+                        const { data, error } = await supabase.functions.invoke('get-download-url', {
+                            body: { bookId, assetType: 'ebook' }
                         });
                         
-                        if (data?.url) {
-                            window.open(data.url, '_blank');
-                        } else if (data?.pending) {
-                            alert(`Audio is still being generated. In the meantime, enjoy streaming it in the player below!\n\nYour file will be emailed when ready.`);
+                        if (error) throw error;
+                        
+                        if (data?.content) {
+                            // Create and trigger download from content received from database
+                            const element = document.createElement("a");
+                            const file = new Blob([data.content], { type: 'text/plain;charset=utf-8' });
+                            element.href = URL.createObjectURL(file);
+                            element.download = data.filename || `Waveform_Handyman_Vol_${book?.id}.txt`;
+                            document.body.appendChild(element);
+                            element.click();
+                            document.body.removeChild(element);
+                            URL.revokeObjectURL(element.href);
+                            
+                            alert(`✅ Downloaded "${data.title || book?.title}"!\n\nEnjoy your quantum fiction adventure.`);
+                        } else {
+                            throw new Error('No content received');
                         }
                     } catch (e) {
-                        console.error('Download error:', e);
-                        alert('Audio download temporarily unavailable. You can stream it using the Play button.');
+                        console.error('Ebook download error:', e);
+                        // Fallback to basic content
+                        const element = document.createElement("a");
+                        const file = new Blob([
+                            `THE WAVEFORM HANDYMAN: VOL ${book?.id}\n`,
+                            `${book?.title?.toUpperCase()}\n\n`,
+                            `PROBLEM:\n${book?.problem}\n\n`,
+                            `RESOLUTION:\n${book?.resolution}\n\n`,
+                            `Thank you for your purchase!`
+                        ], {type: 'text/plain'});
+                        element.href = URL.createObjectURL(file);
+                        element.download = `Waveform_Handyman_Vol_${book?.id}.txt`;
+                        document.body.appendChild(element);
+                        element.click();
+                        document.body.removeChild(element);
                     }
                 } else {
-                    // Download text version
-                    const element = document.createElement("a");
-                    const file = new Blob([
-                        `THE WAVEFORM HANDYMAN: VOL ${book?.id}\n`,
-                        `${book?.title.toUpperCase()}\n\n`,
-                        `PROBLEM:\n${book?.problem}\n\n`,
-                        `RESOLUTION:\n${book?.resolution}\n\n`,
-                        `Thank you for your purchase!`
-                    ], {type: 'text/plain'});
-                    element.href = URL.createObjectURL(file);
-                    element.download = `Waveform_Handyman_Vol_${book?.id}.txt`;
-                    document.body.appendChild(element);
-                    element.click();
+                    // User wants to stream - start playing
+                    if (book) {
+                        playFullStory(book);
+                    }
                 }
                 
                 // Clear URL params
@@ -332,7 +348,7 @@ const App: React.FC = () => {
           </button>
           <button 
              onClick={() => setActiveTab('admin')}
-             className={`p-2 rounded-full transition-colors ${activeTab === 'admin' ? 'bg-magical-800 text-amber-400' : 'text-magical-800/20 hover:text-magical-800'}`}
+             className={`p-2 rounded-full transition-colors ${activeTab === 'admin' ? 'bg-magical-800 text-amber-400' : 'text-amber-500 hover:text-magical-800 hover:bg-amber-100'}`}
              title="Admin Panel"
           >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>

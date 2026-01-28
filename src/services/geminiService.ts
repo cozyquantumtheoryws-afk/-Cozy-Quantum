@@ -1,10 +1,45 @@
 
 import type { ImageSize } from '../types';
+import { supabase } from '../lib/supabaseClient';
 
 export const geminiService = {
-  generateStoryScript: async (title: string, problem: string, resolution: string): Promise<string> => {
-    console.log(`Generating story for ${title}...`);
+  // Fetch the book-specific audio script from the database
+  generateStoryScript: async (title: string, problem: string, resolution: string, bookId?: number): Promise<string> => {
+    console.log(`Fetching story script for ${title}...`);
     
+    // Try to fetch from database first
+    if (bookId) {
+      try {
+        const { data, error } = await supabase
+          .from('books')
+          .select('audio_script')
+          .eq('id', bookId)
+          .single();
+        
+        if (!error && data?.audio_script) {
+          console.log(`Found audio script for book ${bookId}`);
+          // Clean up the script - remove stage directions for TTS
+          const cleanScript = data.audio_script
+            .replace(/\[warm-tone\]/g, '')
+            .replace(/\[chuckle\]/g, '')
+            .replace(/\[pause\]/g, '...')
+            .replace(/\[long-pause\]/g, '......')
+            .replace(/\[whisper\]/g, '')
+            .replace(/\[normal-voice\]/g, '')
+            .replace(/\[sigh-relief\]/g, '')
+            .replace(/\[change-voice:[^\]]+\]/g, '')
+            .replace(/\[sound-effect:[^\]]+\]/g, '')
+            .replace(/\[crunch\]/g, '')
+            .replace(/\[chewing-sound\]/g, '')
+            .trim();
+          return cleanScript;
+        }
+      } catch (e) {
+        console.warn('Failed to fetch audio script from database:', e);
+      }
+    }
+    
+    // Fallback: generate based on book details if no script in database
     const intros = [
       "You know, folks, another Tuesday in Observation Bay, another breach in the fabric of spacetime.",
       "I was just sitting down to my Earl Grey when the sensors went wild.",
@@ -42,7 +77,7 @@ export const geminiService = {
     const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
     
     return new Promise(resolve => setTimeout(() => 
-      resolve(`${pick(intros)} ${pick(connectors)} ${pick(tools)} ${pick(resolutions)}`), 1000));
+      resolve(`${pick(intros)} ${pick(connectors)} ${pick(tools)} ${pick(resolutions)}`), 500));
   },
   
   generateStoryboardPrompts: async (_storyText: string): Promise<string[]> => {
