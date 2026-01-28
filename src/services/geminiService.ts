@@ -2,11 +2,19 @@
 import type { ImageSize } from '../types';
 import { supabase } from '../lib/supabaseClient';
 
+import { FOGHORN_FULL_SCRIPT } from '../data/foghorn_script';
+
 export const geminiService = {
   // Fetch the book-specific audio script from the database
   generateStoryScript: async (title: string, problem: string, resolution: string, bookId?: number): Promise<string> => {
     console.log(`Fetching story script for ${title}...`);
     
+    // Inject full novelette for The Foghorn's Dilemma
+    if (bookId === 1) {
+       console.log("Using full novelette script.");
+       return FOGHORN_FULL_SCRIPT.join("\n\n");
+    }
+
     // Try to fetch from database first
     if (bookId) {
       try {
