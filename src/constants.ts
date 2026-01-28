@@ -11,6 +11,7 @@ export const BOOKS: Book[] = [
     price: "$1.99",
     wordCount: 12000,
     priceId: "price_placeholder_foghorn",
-    audioAmbience: "/sounds/foghorn_ambience.mp3"
+    audioAmbience: "/sounds/foghorn_ambience.mp3",
+    backgroundMusic: "/sounds/mystery_music.mp3"
   }
 ];

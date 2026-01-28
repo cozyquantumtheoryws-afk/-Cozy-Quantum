@@ -176,23 +176,34 @@ const App: React.FC = () => {
   };
 
   const ambienceRef = useRef<HTMLAudioElement | null>(null);
+  const musicRef = useRef<HTMLAudioElement | null>(null);
 
-  // Ambience Effect
+  // Ambience & Music Effect
   useEffect(() => {
-    if (playingBook?.audioAmbience && isPlaying) {
-      if (ambienceRef.current) {
-        // Only change src if it's different to avoid reloading
+    if (isPlaying && playingBook) {
+      // Handle Ambience
+      if (ambienceRef.current && playingBook.audioAmbience) {
         const currentSrc = ambienceRef.current.src.replace(window.location.origin, '');
         if (currentSrc !== playingBook.audioAmbience) {
             ambienceRef.current.src = playingBook.audioAmbience;
         }
-        ambienceRef.current.volume = 0.15; // Low background volume
-        ambienceRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+        ambienceRef.current.volume = 0.3; // Louder ocean/foghorn
+        ambienceRef.current.play().catch(e => console.log('Ambience Autoplay prevented:', e));
+      }
+
+      // Handle Music
+      if (musicRef.current && playingBook.backgroundMusic) {
+        const currentMusicSrc = musicRef.current.src.replace(window.location.origin, '');
+        if (currentMusicSrc !== playingBook.backgroundMusic) {
+            musicRef.current.src = playingBook.backgroundMusic;
+        }
+        musicRef.current.volume = 0.1; // Subtle background jazz/noir
+        musicRef.current.play().catch(e => console.log('Music Autoplay prevented:', e));
       }
     } else {
-      if (ambienceRef.current) {
-        ambienceRef.current.pause();
-      }
+      // Pause both
+      if (ambienceRef.current) ambienceRef.current.pause();
+      if (musicRef.current) musicRef.current.pause();
     }
   }, [playingBook, isPlaying]);
 
@@ -484,6 +495,7 @@ const App: React.FC = () => {
       
       {/* Hidden Ambience Player */}
       <audio ref={ambienceRef} loop />
+      <audio ref={musicRef} loop />
 
       {/* Persistent Audio & Visual Story Player */}
       {playingBook && (
