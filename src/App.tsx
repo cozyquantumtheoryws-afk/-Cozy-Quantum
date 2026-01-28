@@ -137,9 +137,16 @@ const App: React.FC = () => {
       const audioCtx = audioContextRef.current;
       if (!audioCtx) throw new Error("Audio context not initialized.");
 
-      // Split story text into paragraphs for better narration flow (preserves 'Mr.', 'Mrs.', etc.)
-      // The script is joined by \n\n, so we split by that.
-      const narrationLines = storyText.split(/\n\s*\n/).map(s => s.trim()).filter(s => s.length > 0);
+      // Split story text into paragraphs
+      const allLines = storyText.split(/\n\s*\n/).map(s => s.trim()).filter(s => s.length > 0);
+      
+      // CRITICAL: Limit free preview to ~15-20 seconds (first 3 paragraphs)
+      // Ideally check user purchase status here. For now, hard limit everyone.
+      const narrationLines = allLines.slice(0, 3);
+      
+      // Append a "Please purchase to continue..." end card
+      narrationLines.push("... [End of Free Preview. Please purchase the full audiobook to continue the story.] ...");
+      
       narrationLinesRef.current = narrationLines; 
 
       // Start the sequence
