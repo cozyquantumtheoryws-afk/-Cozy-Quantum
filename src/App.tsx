@@ -598,6 +598,23 @@ const App: React.FC = () => {
                 <p className="text-[13px] text-amber-900 italic serif leading-relaxed">"{currentNarratedStory}"</p>
               </div>
             )}
+            
+            {/* Download Link (Simulated for Bought User) */}
+            <div className="mt-4 text-center">
+                 <a 
+                   href={`/downloads/the_foghorn_dilemma_complete.mp3`} 
+                   download
+                   className="text-[10px] font-bold text-magical-600 hover:text-magical-900 uppercase tracking-widest border-b border-transparent hover:border-magical-900 transition-all cursor-pointer"
+                   onClick={(e) => {
+                     // In a real app, check purchase status here
+                     if(!window.confirm("Confirm download of 'The Foghorn's Dilemma' MP3?")) {
+                       e.preventDefault();
+                     }
+                   }}
+                 >
+                   Download Audiobook (MP3)
+                 </a>
+            </div>
           </div>
         </footer>
       )}
