@@ -7,7 +7,7 @@ import GithubSync from './components/GithubSync';
 import { geminiService, decodeAudioData } from './services/geminiService';
 import type { Book } from './types';
 import { paymentService } from './services/paymentService';
-import { supabase } from './lib/supabaseClient';
+// import { supabase } from './lib/supabaseClient';
 import { Footer } from './components/Footer';
 import { MarketingDashboard } from './components/MarketingDashboard';
 import { AdminPanel } from './components/AdminPanel';
@@ -310,51 +310,21 @@ const App: React.FC = () => {
                 const choice = confirm(
                     `🎉 PAYMENT SUCCESSFUL!\n\n` +
                     `Thank you for purchasing "${book?.title}".\n\n` +
-                    `Click OK to download your ebook (TXT)\n` +
-                    `Click Cancel to stream the audiobook now`
+                    `Click OK to download your audiobook (MP3)\n` +
+                    `Click Cancel to stream it in the browser`
                 );
                 
                 if (choice) {
-                    // Download ebook/text version from database
-                    try {
-                        const { data, error } = await supabase.functions.invoke('get-download-url', {
-                            body: { bookId, assetType: 'ebook' }
-                        });
-                        
-                        if (error) throw error;
-                        
-                        if (data?.content) {
-                            // Create and trigger download from content received from database
-                            const element = document.createElement("a");
-                            const file = new Blob([data.content], { type: 'text/plain;charset=utf-8' });
-                            element.href = URL.createObjectURL(file);
-                            element.download = data.filename || `Waveform_Handyman_Vol_${book?.id}.txt`;
-                            document.body.appendChild(element);
-                            element.click();
-                            document.body.removeChild(element);
-                            URL.revokeObjectURL(element.href);
-                            
-                            alert(`✅ Downloaded "${data.title || book?.title}"!\n\nEnjoy your quantum fiction adventure.`);
-                        } else {
-                            throw new Error('No content received');
-                        }
-                    } catch (e) {
-                        console.error('Ebook download error:', e);
-                        // Fallback to basic content
-                        const element = document.createElement("a");
-                        const file = new Blob([
-                            `THE WAVEFORM HANDYMAN: VOL ${book?.id}\n`,
-                            `${book?.title?.toUpperCase()}\n\n`,
-                            `PROBLEM:\n${book?.problem}\n\n`,
-                            `RESOLUTION:\n${book?.resolution}\n\n`,
-                            `Thank you for your purchase!`
-                        ], {type: 'text/plain'});
-                        element.href = URL.createObjectURL(file);
-                        element.download = `Waveform_Handyman_Vol_${book?.id}.txt`;
-                        document.body.appendChild(element);
-                        element.click();
-                        document.body.removeChild(element);
-                    }
+                    // Trigger MP3 Download
+                    const element = document.createElement("a");
+                    // Point to the static file in public/downloads (which we will ensure exists)
+                    element.href = "/downloads/the_foghorn_dilemma_complete.mp3"; 
+                    element.download = "The_Foghorn_Dilemma_Complete.mp3";
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                    
+                    alert(`✅ Downloading "${book?.title}" Audiobook!\n\nEnjoy the quantum vibes.`);
                 } else {
                     // User wants to stream - start playing
                     if (book) {
