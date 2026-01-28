@@ -34,7 +34,7 @@ export const BOOKS: Book[] = [
     title: "The Clock That Ticks Sideways",
     problem: "Grandfather's clock has started measuring duration in spatial dimensions, causing the hallway to lengthen every hour.",
     resolution: "Politely asking the pendulum to respect the concept of 'Tomorrow' instead of 'Left'.",
-    image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&auto=format&fit=crop",
+    image: "/covers/clock_cover.png",
     price: "$1.99",
     wordCount: 13200
   },
