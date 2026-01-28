@@ -547,10 +547,10 @@ const App: React.FC = () => {
 
               <div className="flex-1 flex justify-end">
                 <button 
-                  onClick={() => paymentService.initiateCheckout(playingBook.id, 'user_123')} // 'user_123' is placeholder till Auth is real
+                  onClick={() => paymentService.initiateCheckout(playingBook.id, 'user_123', playingBook.priceId)} // 'user_123' is placeholder till Auth is real
                   className="bg-magical-100 text-magical-900 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border border-magical-200 hover:bg-magical-200 transition-colors"
                 >
-                  Buy Vol. {playingBook.id} $1.99
+                  Buy Vol. {playingBook.id} {playingBook.price}
                 </button>
               </div>
             </div>

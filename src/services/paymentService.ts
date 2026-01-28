@@ -2,12 +2,12 @@
 import { supabase } from '../lib/supabaseClient';
 
 export const paymentService = {
-  async initiateCheckout(bookId: number, userId: string) {
+  async initiateCheckout(bookId: number, userId: string, priceId?: string) {
     try {
       console.log(`Initiating checkout for Book ${bookId}...`);
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { bookId, userId }
+        body: { bookId, userId, priceId }
       });
 
       if (error) throw error;
