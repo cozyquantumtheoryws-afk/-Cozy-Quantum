@@ -99,6 +99,9 @@ const App: React.FC = () => {
     setStoryImages([]);
     setCurrentImageIndex(0);
     setErrorMessage(null);
+    
+    // CRITICAL: Clear audio cache when switching books to prevent playing wrong book's audio
+    audioCacheRef.current.clear();
 
     try {
       // 1. Generate Story Content - now fetches book-specific script from database
