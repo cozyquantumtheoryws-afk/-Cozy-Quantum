@@ -7,9 +7,53 @@ interface AudioStatus {
 }
 
 export const AdminPanel: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passcode === '877668') {
+      setIsAuthenticated(true);
+      setError('');
+    } else {
+      setError('Incorrect passcode');
+    }
+  };
+
   const [audioStatus, setAudioStatus] = useState<AudioStatus>({});
   const [messages, setMessages] = useState<string[]>([]);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl p-8">
+        <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-3xl mb-4">
+          🔒
+        </div>
+        <h2 className="text-2xl font-bold text-magical-900 mb-2">Admin Access Required</h2>
+        <p className="text-magical-600 mb-6 text-sm">Please enter the master passcode.</p>
+        
+        <form onSubmit={handleLogin} className="w-full max-w-xs space-y-4">
+          <input
+            type="password"
+            value={passcode}
+            onChange={(e) => setPasscode(e.target.value)}
+            placeholder="Enter Passcode"
+            className="w-full px-4 py-3 rounded-xl border border-magical-200 focus:ring-2 focus:ring-amber-400 outline-none font-mono text-center tracking-[0.5em]"
+            autoFocus
+          />
+          {error && <p className="text-red-500 text-xs text-center font-bold">{error}</p>}
+          <button 
+            type="submit"
+            className="w-full bg-magical-900 text-white py-3 rounded-xl font-bold hover:bg-magical-800 transition-colors"
+          >
+            Unlock Panel
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   const addMessage = (msg: string) => {
     setMessages(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
