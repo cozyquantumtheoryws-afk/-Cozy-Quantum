@@ -2,7 +2,9 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@12.18.0?target=deno";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
+const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2023-10-16",
   httpClient: Stripe.createFetchHttpClient(),
 });
@@ -18,11 +20,15 @@ serve(async (req) => {
   }
 
   try {
-    const { bookId, userId, priceId } = await req.json();
+    const { bookId, userId } = await req.json();
 
-    if (!bookId || !priceId) {
-       throw new Error("Missing bookId or priceId");
+    if (!bookId) {
+       throw new Error("Missing bookId");
     }
+
+    console.log(`Creating session for book: ${bookId}, user: ${userId}`);
+
+    const origin = req.headers.get("origin") || "https://www.cozyquantum.com";
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -33,7 +39,7 @@ serve(async (req) => {
             product_data: {
               name: `The Waveform Handyman Vol. ${bookId}`,
               metadata: {
-                  book_id: bookId
+                  book_id: bookId.toString()
               }
             },
             unit_amount: 199, // $1.99
@@ -42,19 +48,22 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/desk?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/shop`,
+      success_url: `${origin}/?payment_success=true&book_id=${bookId}`,
+      cancel_url: `${origin}/`,
       metadata: {
-        book_id: bookId,
-        user_id: userId, // Optional, depending on if you require auth before purchase
+        book_id: bookId.toString(),
+        user_id: userId || "anonymous",
       },
     });
+
+    console.log(`Session created: ${session.id}`);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
+    console.error(`Checkout error: ${error.message}`);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
